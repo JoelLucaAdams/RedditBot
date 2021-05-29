@@ -1,6 +1,6 @@
-# RedditDownloadBot
+# RedditBot
 
-A discord bot that takes a Reddit link to a video and combines the video and audio into a single file and sends it back to the Discord server
+A discord bot that takes a Reddit link to a video and combines the video and audio into a single file and sends it back to the Discord server. Cannot usually send videos that are longer than 10-15 seconds due to Discord file limit of 4mb
 
 ## Setup
 
@@ -14,4 +14,4 @@ Users can query man pages using the following commands:
 
 ## Preview of the bot working
 
-![Preview](https://raw.githubusercontent.com/JoelLucaAdams/ManPageBot/main/Preview.png)
+![Preview](https://raw.githubusercontent.com/JoelLucaAdams/RedditBot/main/Preview.png)
