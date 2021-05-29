@@ -14,4 +14,4 @@ Users can query man pages using the following commands:
 
 ## Preview of the bot working
 
-![Preview](https://raw.githubusercontent.com/JoelLucaAdams/RedditBot/main/Preview.png)
+![Preview](https://raw.githubusercontent.com/JoelLucaAdams/RedditBot/master/Preview.png)
