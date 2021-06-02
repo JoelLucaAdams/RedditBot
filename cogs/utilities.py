@@ -39,6 +39,8 @@ class Utilities(commands.Cog):
         """
         replies with a video from the reddit link
         """
+        await ctx.defer()
+        
         try:
             r = requests.get(f'{url.split("?", 1)[0]}.json', headers={'User-agent': 'redditBot v0.1'})
         except requests.exceptions.RequestException:
