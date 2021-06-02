@@ -8,9 +8,11 @@ Before using the bot you must create a `.env` file which includes the line `DISC
 
 ## Usage
 
-Users can query man pages using the following commands:
+Users can query the bot using the slash commands:
 
-`!reddit <link>` - returns an mp4 of the video
+`/reddit <link>` - returns an mp4 of the video
+`/source` - link to GitHub repository
+`/ping` - gets bot latency
 
 ## Preview of the bot working
 
