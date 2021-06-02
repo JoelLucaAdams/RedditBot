@@ -10,8 +10,8 @@ Before using the bot you must create a `.env` file which includes the line `DISC
 
 Users can query the bot using the slash commands:
 
-`/reddit <link>` - returns an mp4 of the video
-`/source` - link to GitHub repository
+`/reddit <link>` - returns an mp4 of the video \
+`/source` - link to GitHub repository \
 `/ping` - gets bot latency
 
 ## Preview of the bot working
