@@ -1,15 +1,13 @@
-import os
-
-import logging
-
 import discord
 from discord.ext import commands
-from discord.ext.commands import DefaultHelpCommand
+from discord_slash import SlashCommand
+from cogs.utilities import Utilities
+import os
+import logging
 from dotenv import load_dotenv
 
-# logs data to the discord.log file, if this file doesn't exist at runtime it is created automatically
-from cogs.utilities import Utilities
 
+# logs data to the discord.log file, if this file doesn't exist at runtime it is created automatically
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)  # logging levels: NOTSET (all), DEBUG (bot interactions), INFO (bot connected etc)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
@@ -21,19 +19,15 @@ logger.addHandler(handler)
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-
-# Initialise the Bot object with an accessible help Command object
-helpCommand = DefaultHelpCommand()
-
 bot = commands.Bot(
     command_prefix="!",
-    help_command=helpCommand
+    intents=discord.Intents.all()
 )
 
-# Setup the General cog with the help command
-generalCog = Utilities()
-bot.add_cog(generalCog)
-helpCommand.cog = generalCog
+slash = SlashCommand(bot, sync_commands=True, sync_on_cog_reload=True)
+
+# Setup cogs
+bot.add_cog(Utilities(bot))
 
 
 @bot.event
@@ -46,7 +40,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_command_error(ctx, error):
+async def on_slash_command_error(ctx, error):
     """
     Handle the Error message in a nice way.
     """
@@ -59,7 +53,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.errors.CommandNotFound):
         pass
     else:
-        await ctx.send('You are missing a required argument.')
+        await ctx.send('An unexpected error occured')
         logging.error(error)
 
 # Start the bot
