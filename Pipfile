@@ -7,12 +7,12 @@ verify_ssl = true
 
 
 [packages]
-discord = "*"
 python-dotenv = "*"
 PyNaCl = "*"
 "discord.py" = "*"
 asyncio = "*"
 requests = "*"
+discord-py-slash-command = "*"
 
 [requires]
 python_version = "3.7"
