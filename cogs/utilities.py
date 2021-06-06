@@ -52,29 +52,54 @@ class Utilities(commands.Cog):
             return
         else:
             json_response = r.json()
-
-        # Checks if the video url exists, otherwise sends an error message
-        try:
-            video = json_response[0]["data"]["children"][0]["data"]["secure_media"]["reddit_video"]["fallback_url"]
-        except TypeError:
-            await ctx.send(":warning: Cannot find video from reddit link. If this is a crosspost please please use the original posts' link.")
-            return
-
-        audio = f'{json_response[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]}/DASH_audio.mp4'
-
+    
         title = json_response[0]["data"]["children"][0]["data"]["title"]
         subreddit = json_response[0]["data"]["children"][0]["data"]["subreddit_name_prefixed"]
 
-        if requests.get(audio, headers={'User-agent': 'redditBot v0.1'}).status_code != 403:
-            p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
-        else:
-            p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
-        
-        p1.wait()
-
         embed = Embed(description=f'[{subreddit} - {title}]({url})', color=discord.Color.from_rgb(255, 69, 0), timestamp=datetime.utcnow())
         embed.set_footer(icon_url=ctx.author.avatar_url, text= f'Sent by {ctx.author.display_name}')
-        await ctx.send(embed=embed, file=discord.File("output.mp4"))
-        
+
+        # Checks if the video url exists
+        try:
+            video = json_response[0]["data"]["children"][0]["data"]["secure_media"]["reddit_video"]["fallback_url"]
+
+            audio = f'{json_response[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]}/DASH_audio.mp4'
+
+            if requests.get(audio, headers={'User-agent': 'redditBot v0.1'}).status_code != 403:
+                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
+            else:
+                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
+            
+            p1.wait()
+            await ctx.send(embed=embed, file=discord.File("output.mp4"))
+            return
+        except TypeError:
+            pass
+
+        # Checks if the video url exists with a crosspost
+        try:
+            video = json_response[0]["data"]["children"][0]["data"]["crosspost_parent_list"][0]["secure_media"]["reddit_video"]["fallback_url"]
+
+            audio = f'{json_response[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]}/DASH_audio.mp4'
+
+            if requests.get(audio, headers={'User-agent': 'redditBot v0.1'}).status_code != 403:
+                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
+            else:
+                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
+            
+            p1.wait()
+            await ctx.send(embed=embed, file=discord.File("output.mp4"))
+            return
+        except KeyError:
+            pass
+
+        # Checks if there is a gif or an image
+        try:
+            img_or_gif = json_response[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]
+            embed.set_image(url=img_or_gif)
+            await ctx.send(embed=embed)
+        except TypeError:
+            pass
+                
 def setup(bot):
     bot.add_cog(Utilities(bot))
