@@ -9,13 +9,6 @@ from dotenv import load_dotenv
 import helpers
 from cogs.utilities import Utilities
 
-# logs data to the discord.log file, if this file doesn't exist at runtime it is created automatically
-logger = logging.getLogger('discord')
-logger.setLevel(logging.INFO)  # logging levels: NOTSET (all), DEBUG (bot interactions), INFO (bot connected etc)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
-
 # load the private discord token from .env file.
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')

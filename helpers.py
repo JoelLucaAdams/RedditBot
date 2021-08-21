@@ -1,8 +1,17 @@
+import logging
 import os
 import subprocess
+from logging import CRITICAL
 
 import discord
 import requests
+
+# logs data to the discord.log file, if this file doesn't exist at runtime it is created automatically
+logger = logging.getLogger('discord')
+logger.setLevel(logging.INFO)  # logging levels: NOTSET (all), DEBUG (bot interactions), INFO (bot connected etc)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 FFMPEG_LOCATION = 'ffmpeg'
 
@@ -41,25 +50,34 @@ def json__payload__get__gif_or_image(json_payload) -> str:
 
 def process_media(video, audio) -> bool:
     if requests.get(audio, headers={'User-agent': 'redditBot v0.1'}).status_code != 403:
-        p1 = subprocess.Popen(
+        process = subprocess.Popen(
             [FFMPEG_LOCATION, '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'],
-            cwd=os.getcwd()
+            cwd=os.getcwd(),
+            shell=True,
+            stderr=subprocess.PIPE
         )
     else:
-        p1 = subprocess.Popen(
+        process = subprocess.Popen(
             [FFMPEG_LOCATION, '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'],
-            cwd=os.getcwd()
+            cwd=os.getcwd(),
+            shell=True,
+            stderr=subprocess.PIPE
         )
 
-    if p1.wait() == 0:
+    if process.wait() == 0:
         return True
-    else:
-        return False
+
+    logger.log(
+        level=CRITICAL,
+        msg=process.stderr.read()
+    )
+
+    return False
 
 
 def get_video_url_from_payload(json_payload):
-    try:
-        video, audio = json_payload__get__video_and_audio(json_payload)
-        return process_media(video, audio), discord.File("output.mp4")
-    except TypeError:
+    video, audio = json_payload__get__video_and_audio(json_payload)
+    if process_media(video, audio):
+        return True, discord.File("output.mp4")
+    else:
         return False, None
