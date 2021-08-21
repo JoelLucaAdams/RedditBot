@@ -9,19 +9,13 @@ from dotenv import load_dotenv
 import helpers
 from cogs.utilities import Utilities
 
-# load the private discord token from .env file.
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(
     command_prefix="!",
     intents=discord.Intents.default()
 )
-
 slash = SlashCommand(bot, sync_commands=True, sync_on_cog_reload=True)
-
-# Setup cogs
-bot.add_cog(Utilities(bot))
 
 
 @bot.event
@@ -56,7 +50,8 @@ def main():
     if os.getenv('FFMPEG_LOCATION') is not None:
         helpers.FFMPEG_LOCATION = os.getenv('FFMPEG_LOCATION')
 
-    bot.run(TOKEN)
+    bot.add_cog(Utilities(bot))
+    bot.run(os.getenv('DISCORD_TOKEN'))
 
 
 if __name__ == '__main__':
