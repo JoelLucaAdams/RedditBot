@@ -11,6 +11,14 @@ For Debian users, you can run `sudo apt update && sudo apt install -y ffmpeg`
 
 More information on ffmpeg can be found here https://www.ffmpeg.org/.
 
+## .env file
+A template/example can be seen below:
+```angular2html
+DISCORD_TOKEN=""
+FFMPEG_LOCATION=""
+```
+**HOWEVER** the "FFMPEG_LOCATION" variable is not required, if a location is not specified, the bot will use `ffmpeg`.
+
 ## Usage
 
 Users can query the bot using the slash commands:
