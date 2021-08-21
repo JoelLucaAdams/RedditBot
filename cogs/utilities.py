@@ -7,7 +7,7 @@ from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.context import SlashContext
 
-from helpers import get_reddit_json_payload, get_video_url_from_payload
+import helpers
 
 
 class Utilities(commands.Cog):
@@ -41,10 +41,10 @@ class Utilities(commands.Cog):
         """
         await ctx.defer()
 
-        success, json_payload = get_reddit_json_payload(url)
+        success, json_payload = helpers.get_reddit_json_payload(url)
 
         if success is False:
-            await ctx.send(content=json_payload)
+            await ctx.send(content=json_payload.get('error-message'))
             return
 
         embed = Embed(
@@ -57,8 +57,9 @@ class Utilities(commands.Cog):
             text=f'Sent by {ctx.author.display_name}'
         )
 
-        is_video, discord_file = get_video_url_from_payload(json_payload)
+        is_video, discord_file = helpers.get_video_url_from_payload(json_payload.get('video'), json_payload.get('audio'))
         if is_video is True:
+            print(discord_file)
             await ctx.send(embed=embed, file=discord_file)
         else:
             temp_media = json_payload.get('image')

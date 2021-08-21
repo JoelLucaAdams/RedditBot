@@ -16,17 +16,17 @@ logger.addHandler(handler)
 FFMPEG_LOCATION = 'ffmpeg'
 
 
-def get_reddit_json_payload(url: str) -> Union[tuple[bool, str], tuple[bool, dict]]:
+def get_reddit_json_payload(url: str):
     try:
         r = requests.get(
             f'{url.split("?", 1)[0]}.json',
             headers={'User-agent': 'redditBot v0.1'}
         )
     except requests.exceptions.RequestException:
-        return False, ':warning: Error getting request from url, it may be invalid'
+        return False, {'error-message': ':warning: Error getting request from url, it may be invalid'}
 
     if r.status_code == 429:
-        return False, ':warning: Received error `429` from Reddit'
+        return False, {'error-message': ':warning: Received error `429` from Reddit'}
     else:
         json_payload = r.json()
         return True, {
@@ -65,8 +65,8 @@ def process_media(video, audio) -> bool:
     return False
 
 
-def get_video_url_from_payload(json_payload):
-    if process_media(json_payload.get('video'), json_payload.get('audio')):
+def get_video_url_from_payload(video, audio):
+    if process_media(video, audio):
         return True, discord.File("output.mp4")
     else:
         return False, None
