@@ -57,5 +57,10 @@ async def on_slash_command_error(ctx, error):
         await ctx.send('An unexpected error occured')
         logging.error(error)
 
-# Start the bot
-bot.run(TOKEN)
+
+def main():
+    bot.run(TOKEN)
+
+
+if __name__ == '__main__':
+    main()
