@@ -21,7 +21,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(
     command_prefix="!",
-    intents=discord.Intents.all()
+    intents=discord.Intents.default()
 )
 
 slash = SlashCommand(bot, sync_commands=True, sync_on_cog_reload=True)
