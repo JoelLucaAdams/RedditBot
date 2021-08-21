@@ -25,7 +25,7 @@ def get_reddit_json_payload(url: str):
         return False, ':warning: Error getting request from url, it may be invalid'
 
     if r.status_code == 429:
-        return False, ':warning: Recieved error `429` from Reddit'
+        return False, ':warning: Received error `429` from Reddit'
     else:
         return True, r.json()
 
