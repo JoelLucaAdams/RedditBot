@@ -9,6 +9,8 @@ import requests
 import os
 from datetime import datetime
 
+FFMPEG_LOCATION = 'ffmpeg'
+
 
 def get_reddit_json_payload(url: str):
     try:
@@ -45,12 +47,12 @@ def json__payload__get__gif_or_image(json_payload) -> str:
 def process_media(video, audio) -> bool:
     if requests.get(audio, headers={'User-agent': 'redditBot v0.1'}).status_code != 403:
         p1 = subprocess.Popen(
-            ['ffmpeg', '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'],
+            [FFMPEG_LOCATION, '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'],
             cwd=os.getcwd()
         )
     else:
         p1 = subprocess.Popen(
-            ['ffmpeg', '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'],
+            [FFMPEG_LOCATION, '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'],
             cwd=os.getcwd()
         )
 

@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand
+
+import helpers
 from cogs.utilities import Utilities
 import os
 import logging
@@ -59,6 +61,9 @@ async def on_slash_command_error(ctx, error):
 
 
 def main():
+    if os.getenv('FFMPEG_LOCATION') is not None:
+        helpers.FFMPEG_LOCATION = os.getenv('FFMPEG_LOCATION')
+
     bot.run(TOKEN)
 
 
