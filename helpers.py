@@ -1,13 +1,8 @@
-import discord
-from discord import Embed
-from discord.ext import commands
-from discord_slash.context import SlashContext
-from discord_slash import cog_ext, error
-import time
-import subprocess
-import requests
 import os
-from datetime import datetime
+import subprocess
+
+import discord
+import requests
 
 FFMPEG_LOCATION = 'ffmpeg'
 
@@ -36,7 +31,7 @@ def json_payload__get__subreddit(json_payload) -> str:
 
 
 def json_payload__get__video_and_audio(json_payload) -> tuple[str, str]:
-    return json_payload[0]["data"]["children"][0]["data"]["secure_media"]["reddit_video"]["fallback_url"],\
+    return json_payload[0]["data"]["children"][0]["data"]["secure_media"]["reddit_video"]["fallback_url"], \
            f'{json_payload[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]}/DASH_audio.mp4'
 
 

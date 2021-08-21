@@ -1,13 +1,13 @@
+import logging
+import os
+
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand
+from dotenv import load_dotenv
 
 import helpers
 from cogs.utilities import Utilities
-import os
-import logging
-from dotenv import load_dotenv
-
 
 # logs data to the discord.log file, if this file doesn't exist at runtime it is created automatically
 logger = logging.getLogger('discord')
@@ -15,7 +15,6 @@ logger.setLevel(logging.INFO)  # logging levels: NOTSET (all), DEBUG (bot intera
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
-
 
 # load the private discord token from .env file.
 load_dotenv()

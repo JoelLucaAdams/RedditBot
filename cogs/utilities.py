@@ -1,16 +1,14 @@
+import time
+from datetime import datetime
+
 import discord
 from discord import Embed
 from discord.ext import commands
+from discord_slash import cog_ext
 from discord_slash.context import SlashContext
-from discord_slash import cog_ext, error
-import time
-import subprocess
-import requests
-import os
-from datetime import datetime
 
 from helpers import get_reddit_json_payload, json_payload__get__title, json_payload__get__subreddit, \
-    json_payload__get__video_and_audio, process_media, get_video_url_from_payload, json__payload__get__gif_or_image
+    get_video_url_from_payload, json__payload__get__gif_or_image
 
 
 class Utilities(commands.Cog):
@@ -43,7 +41,7 @@ class Utilities(commands.Cog):
         replies with a video from the reddit link
         """
         await ctx.defer()
-        
+
         success, json_payload = get_reddit_json_payload(url)
 
         if success is False:
