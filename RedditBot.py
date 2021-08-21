@@ -42,7 +42,7 @@ async def on_slash_command_error(ctx, error):
         pass
     else:
         print(error)
-        await ctx.send('An unexpected error occured')
+        await ctx.send('An unexpected error occurred.')
         logging.error(error)
 
 
