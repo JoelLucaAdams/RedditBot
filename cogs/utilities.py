@@ -1,13 +1,13 @@
+import time
+from datetime import datetime
+
 import discord
 from discord import Embed
 from discord.ext import commands
+from discord_slash import cog_ext
 from discord_slash.context import SlashContext
-from discord_slash import cog_ext, error
-import time
-import subprocess
-import requests
-import os
-from datetime import datetime
+
+import helpers
 
 
 class Utilities(commands.Cog):
@@ -40,66 +40,32 @@ class Utilities(commands.Cog):
         replies with a video from the reddit link
         """
         await ctx.defer()
-        
-        try:
-            r = requests.get(f'{url.split("?", 1)[0]}.json', headers={'User-agent': 'redditBot v0.1'})
-        except requests.exceptions.RequestException:
-            await ctx.send(":warning: Error getting request from url, it may be invalid")
+
+        success, json_payload = helpers.get_reddit_json_payload(url)
+
+        if success is False:
+            await ctx.send(content=json_payload.get('error-message'))
             return
 
-        if r.status_code == 429:
-            await ctx.send("Recieved error `429` from Reddit")
-            return
+        embed = Embed(
+            description=f'[{json_payload.get("subreddit")} - {json_payload.get("title")}]({url})',
+            color=discord.Color.from_rgb(255, 69, 0),
+            timestamp=datetime.utcnow()
+        )
+        embed.set_footer(
+            icon_url=ctx.author.avatar_url,
+            text=f'Sent by {ctx.author.display_name}'
+        )
+
+        is_video, discord_file = helpers.get_video_url_from_payload(json_payload.get('video'), json_payload.get('audio'))
+        if is_video is True:
+            print(discord_file)
+            await ctx.send(embed=embed, file=discord_file)
         else:
-            json_response = r.json()
-    
-        title = json_response[0]["data"]["children"][0]["data"]["title"]
-        subreddit = json_response[0]["data"]["children"][0]["data"]["subreddit_name_prefixed"]
-
-        embed = Embed(description=f'[{subreddit} - {title}]({url})', color=discord.Color.from_rgb(255, 69, 0), timestamp=datetime.utcnow())
-        embed.set_footer(icon_url=ctx.author.avatar_url, text= f'Sent by {ctx.author.display_name}')
-
-        # Checks if the video url exists
-        try:
-            video = json_response[0]["data"]["children"][0]["data"]["secure_media"]["reddit_video"]["fallback_url"]
-
-            audio = f'{json_response[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]}/DASH_audio.mp4'
-
-            if requests.get(audio, headers={'User-agent': 'redditBot v0.1'}).status_code != 403:
-                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
-            else:
-                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
-            
-            p1.wait()
-            await ctx.send(embed=embed, file=discord.File("output.mp4"))
-            return
-        except TypeError:
-            pass
-
-        # Checks if the video url exists with a crosspost
-        try:
-            video = json_response[0]["data"]["children"][0]["data"]["crosspost_parent_list"][0]["secure_media"]["reddit_video"]["fallback_url"]
-
-            audio = f'{json_response[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]}/DASH_audio.mp4'
-
-            if requests.get(audio, headers={'User-agent': 'redditBot v0.1'}).status_code != 403:
-                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
-            else:
-                p1 = subprocess.Popen(['ffmpeg', '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'], cwd=os.getcwd())
-            
-            p1.wait()
-            await ctx.send(embed=embed, file=discord.File("output.mp4"))
-            return
-        except KeyError:
-            pass
-
-        # Checks if there is a gif or an image
-        try:
-            img_or_gif = json_response[0]["data"]["children"][0]["data"]["url_overridden_by_dest"]
-            embed.set_image(url=img_or_gif)
+            temp_media = json_payload.get('image')
+            embed.set_image(url=temp_media)
             await ctx.send(embed=embed)
-        except TypeError:
-            pass
-                
+
+
 def setup(bot):
     bot.add_cog(Utilities(bot))

@@ -1,33 +1,21 @@
+import logging
+import os
+
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand
-from cogs.utilities import Utilities
-import os
-import logging
 from dotenv import load_dotenv
 
+import helpers
+from cogs.utilities import Utilities
 
-# logs data to the discord.log file, if this file doesn't exist at runtime it is created automatically
-logger = logging.getLogger('discord')
-logger.setLevel(logging.INFO)  # logging levels: NOTSET (all), DEBUG (bot interactions), INFO (bot connected etc)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
-
-
-# load the private discord token from .env file.
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(
     command_prefix="!",
-    intents=discord.Intents.all()
+    intents=discord.Intents.default()
 )
-
 slash = SlashCommand(bot, sync_commands=True, sync_on_cog_reload=True)
-
-# Setup cogs
-bot.add_cog(Utilities(bot))
 
 
 @bot.event
@@ -45,6 +33,10 @@ async def on_slash_command_error(ctx, error):
     Handle the Error message in a nice way.
     """
     if hasattr(ctx.command, 'on_error'):
+        helpers.logger.log(
+            level=logging.ERROR,
+            msg='unknown error in command execution'
+        )
         return
     elif isinstance(error, commands.errors.CheckFailure):
         await ctx.send(error)
@@ -53,9 +45,20 @@ async def on_slash_command_error(ctx, error):
     elif isinstance(error, commands.errors.CommandNotFound):
         pass
     else:
-        print(error)
-        await ctx.send('An unexpected error occured')
-        logging.error(error)
+        helpers.logger.log(
+            level=logging.CRITICAL,
+            msg=error
+        )
+        await ctx.send('An unexpected error occurred.')
 
-# Start the bot
-bot.run(TOKEN)
+
+def main():
+    if os.getenv('FFMPEG_LOCATION') is not None:
+        helpers.FFMPEG_LOCATION = os.getenv('FFMPEG_LOCATION')
+
+    bot.add_cog(Utilities(bot))
+    bot.run(os.getenv('DISCORD_TOKEN'))
+
+
+if __name__ == '__main__':
+    main()
