@@ -33,6 +33,10 @@ async def on_slash_command_error(ctx, error):
     Handle the Error message in a nice way.
     """
     if hasattr(ctx.command, 'on_error'):
+        helpers.logger.log(
+            level=logging.ERROR,
+            msg='unknown error in command execution'
+        )
         return
     elif isinstance(error, commands.errors.CheckFailure):
         await ctx.send(error)
@@ -41,9 +45,11 @@ async def on_slash_command_error(ctx, error):
     elif isinstance(error, commands.errors.CommandNotFound):
         pass
     else:
-        print(error)
+        helpers.logger.log(
+            level=logging.CRITICAL,
+            msg=error
+        )
         await ctx.send('An unexpected error occurred.')
-        logging.error(error)
 
 
 def main():

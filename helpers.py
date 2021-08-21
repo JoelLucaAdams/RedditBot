@@ -1,7 +1,6 @@
 import logging
 import os
 import subprocess
-from logging import CRITICAL
 
 import discord
 import requests
@@ -68,7 +67,7 @@ def process_media(video, audio) -> bool:
         return True
 
     logger.log(
-        level=CRITICAL,
+        level=logging.CRITICAL,
         msg=process.stderr.read()
     )
 
