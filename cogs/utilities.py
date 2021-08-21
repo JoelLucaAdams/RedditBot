@@ -7,8 +7,7 @@ from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.context import SlashContext
 
-from helpers import get_reddit_json_payload, json_payload__get__title, json_payload__get__subreddit, \
-    get_video_url_from_payload, json__payload__get__gif_or_image
+from helpers import get_reddit_json_payload, get_video_url_from_payload
 
 
 class Utilities(commands.Cog):
@@ -48,11 +47,8 @@ class Utilities(commands.Cog):
             await ctx.send(content=json_payload)
             return
 
-        title = json_payload__get__title(json_payload)
-        subreddit = json_payload__get__subreddit(json_payload)
-
         embed = Embed(
-            description=f'[{subreddit} - {title}]({url})',
+            description=f'[{json_payload.get("subreddit")} - {json_payload.get("title")}]({url})',
             color=discord.Color.from_rgb(255, 69, 0),
             timestamp=datetime.utcnow()
         )
@@ -65,7 +61,7 @@ class Utilities(commands.Cog):
         if is_video is True:
             await ctx.send(embed=embed, file=discord_file)
         else:
-            temp_media = json__payload__get__gif_or_image(json_payload)
+            temp_media = json_payload.get('image')
             embed.set_image(url=temp_media)
             await ctx.send(embed=embed)
 
