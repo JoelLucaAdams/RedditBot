@@ -43,14 +43,12 @@ def process_media(video, audio) -> bool:
         process = subprocess.Popen(
             [FFMPEG_LOCATION, '-i', f'{video}', '-i', f'{audio}', '-c', 'copy', 'output.mp4', '-y'],
             cwd=os.getcwd(),
-            shell=True,
             stderr=subprocess.PIPE
         )
     else:
         process = subprocess.Popen(
             [FFMPEG_LOCATION, '-i', f'{video}', '-c', 'copy', 'output.mp4', '-y'],
             cwd=os.getcwd(),
-            shell=True,
             stderr=subprocess.PIPE
         )
 
