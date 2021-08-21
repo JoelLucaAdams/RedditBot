@@ -32,7 +32,7 @@ class Utilities(commands.Cog):
         Print a link to the source code
         """
         await ctx.send(content='Created by `Joel Adams`\n'
-                               'Further development by Sam\n'
+                               'Further development by `Sam Lewis`\n'
                                'https://github.com/JoelLucaAdams/RedditBot')
 
     @cog_ext.cog_slash(name="reddit")
