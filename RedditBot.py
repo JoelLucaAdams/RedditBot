@@ -49,7 +49,7 @@ async def on_slash_command_error(ctx, error):
             level=logging.CRITICAL,
             msg=error
         )
-        await ctx.send('An unexpected error occurred.')
+        await ctx.send(str(error))
 
 
 def main():
